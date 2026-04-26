@@ -26,6 +26,11 @@ static bool     sec_locked    = false;
 static uint32_t sec_timestamp = 0;
 static bool     sec_unlocked  = false;
 
+/* VIN number of the car */
+static const uint8_t VIN_NUMBER[17] = {
+    0x32, 0x54, 0x33, 0x52, 0x46, 0x52, 0x45, 0x56,
+    0x37, 0x44, 0x57, 0x31, 0x30, 0x38, 0x31, 0x37, 0x37
+};
 /**
   * @brief Routes an outgoing UDS response over UART.
   *        payload <= 7 bytes transmits as SF directly.
@@ -256,7 +261,6 @@ void SIGMA_ECUReset(uint8_t len, uint8_t sub, uint8_t sid, uint8_t *tx_buf)
 void SIGMA_READ_DID(uint8_t length, uint16_t did, uint8_t *tx_buf)
 {
     memset(tx_buf, 0xAA, 8);
-
     /* Even length that is not exactly 2 is malformed */
     if ((length % 2u) == 0u && length != 2u)
     {
@@ -283,16 +287,14 @@ void SIGMA_READ_DID(uint8_t length, uint16_t did, uint8_t *tx_buf)
     switch (did)
     {
         case DID_ECU_SERIAL_NUMBER:
-            /* SN0001 encoded as 'S' 'N' 0x00 0x01 */
-            tx_buf[0] = 0x07;
-            tx_buf[1] = SID_READ_DATA + POS;   /* 0x62 */
-            tx_buf[2] = (uint8_t)(did >> 8);
-            tx_buf[3] = (uint8_t)(did & 0xFF);
-            tx_buf[4] = 0x53;   /* 'S' */
-            tx_buf[5] = 0x4E;   /* 'N' */
-            tx_buf[6] = 0x00;
-            tx_buf[7] = 0x01;
-            SIGMA_UART_Send(tx_buf, 8);
+        	/* VIN is : 2T3RFREV7DW108177 */
+            uint8_t assembled[21];
+        	assembled[0] = 0x14;
+        	assembled[1] = SID_READ_DATA + POS;   /* 0x62 */
+        	assembled[2] = (uint8_t)(did >> 8);
+        	assembled[3] = (uint8_t)(did & 0xFF);
+            memcpy(&assembled[4], VIN_NUMBER, 17u);
+            SIGMA_UART_Send(assembled, 21);
             break;
 
         case DID_ECU_HW_VERSION:
