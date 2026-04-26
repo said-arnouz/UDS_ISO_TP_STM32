@@ -4,5 +4,5 @@ SIGMA_io_control.c:84:16:_Fan_ReadCurrent	16	static
 SIGMA_io_control.c:94:22:_Relay_ReadCurrent	8	static
 SIGMA_io_control.c:102:13:_Buzzer_SetDuty	16	static
 SIGMA_io_control.c:111:13:_Fan_SetDuty	16	static
-SIGMA_io_control.c:132:6:SIGMA_IOControl	24	static
-SIGMA_io_control.c:363:6:SIGMA_IOControl_Tick	16	static
+SIGMA_io_control.c:120:6:SIGMA_IOControl	24	static
+SIGMA_io_control.c:327:6:SIGMA_IOControl_Tick	16	static

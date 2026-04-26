@@ -18,7 +18,7 @@
 
 extern bool high_sec_unlocked;
 
-/* ── Security state — private to this file ───────────────────────────────── */
+/* Security state — private to this file */
 static uint16_t sec_seed      = 0;
 static bool     sec_seed_sent = false;
 static uint8_t  sec_attempts  = 0;
@@ -26,53 +26,29 @@ static bool     sec_locked    = false;
 static uint32_t sec_timestamp = 0;
 static bool     sec_unlocked  = false;
 
-/* ═══════════════════════════════════════════════════════════════════════════
- *  SIGMA_UART_Send
- *
- *  Routes an outgoing UDS response:
- *    - tx_buf[0] <= 7  → SF: transmit tx_buf as-is (8-byte UART frame)
- *    - tx_buf[0] >  7  → multi-frame: caller is responsible for building
- *                         a dedicated payload buffer and calling
- *                         SIGMA_ISO_TP_Send() directly.
- *
- *  NOTE: Do NOT call this with tx_buf[0] > 7 unless the full payload is
- *  already packed correctly in tx_buf[1..]. For multi-frame responses,
- *  use a local payload buffer and call SIGMA_ISO_TP_Send() directly
- *  (see SIGMA_HighSecurity in SIGMA_iso_tp.c for the correct pattern).
- * ═══════════════════════════════════════════════════════════════════════════ */
+/**
+  * @brief Routes an outgoing UDS response over UART.
+  *        payload <= 7 bytes transmits as SF directly.
+  *        payload > 7 bytes delegates to SIGMA_ISO_TP_Send().
+  */
 void SIGMA_UART_Send(uint8_t *tx_buf, uint8_t len)
 {
     uint8_t payload_len = tx_buf[0];
 
     if (payload_len <= ISO_TP_SF_MAX_PAYLOAD)
     {
-        /* SF — transmit the 8-byte frame directly */
         HAL_UART_Transmit(&huart2, tx_buf, 8u, 1000u);
     }
     else
     {
-        /*
-         * Multi-frame: payload starts at tx_buf[1], length is tx_buf[0].
-         * The caller must ensure tx_buf has at least (payload_len + 1) bytes.
-         * For standard 8-byte tx_buf, only use this path when payload_len <= 7.
-         */
         SIGMA_ISO_TP_Send(&tx_buf[1], payload_len);
     }
 }
 
-/* ═══════════════════════════════════════════════════════════════════════════
- *  SIGMA_UDS_Process
- *
- *  Main UDS dispatcher — reads one SF frame and routes to handler.
- *
- *  Frame layout (SF, received from tester):
- *    frame[0] = LEN   (payload byte count, must be 1-7 for SF)
- *    frame[1] = SID
- *    frame[2] = SUB   (sub-function or DID_H)
- *    frame[3] = DATA  (key or DID_L, 0x00 if unused)
- *    frame[4] = CTRL_PARAM
- *    frame[5] = VALUE
- * ═══════════════════════════════════════════════════════════════════════════ */
+/**
+  * @brief Main UDS dispatcher.
+  *        Decodes the incoming SF frame and routes to the correct handler.
+  */
 void SIGMA_UDS_Process(uint8_t *frame, uint8_t *tx_buf)
 {
     uint8_t len        = frame[0];
@@ -84,7 +60,7 @@ void SIGMA_UDS_Process(uint8_t *frame, uint8_t *tx_buf)
 
     memset(tx_buf, 0xAA, 8);
 
-    /* Global length guard */
+    /* Global length guard — SF payload must be 1 to 7 bytes */
     if (len < 1u || len > 7u)
     {
         tx_buf[0] = 0x03;
@@ -95,7 +71,6 @@ void SIGMA_UDS_Process(uint8_t *frame, uint8_t *tx_buf)
         return;
     }
 
-    /* Route to service handler */
     if (sid == SID_DIAG_SESSION)
     {
         SIGMA_DiagSession(len, sub, sid, tx_buf);
@@ -112,7 +87,7 @@ void SIGMA_UDS_Process(uint8_t *frame, uint8_t *tx_buf)
         }
         else
         {
-            /* sub 0x03 / 0x04 — AES high security, called from SF path */
+            /* sub 0x03 / 0x04 — AES high security */
             SIGMA_HighSecurity(len, sub, frame, tx_buf);
         }
     }
@@ -149,12 +124,9 @@ void SIGMA_UDS_Process(uint8_t *frame, uint8_t *tx_buf)
     }
 }
 
-/* ═══════════════════════════════════════════════════════════════════════════
- *  SIGMA_DiagSession — SID 0x10
- *
- *  Switches ECU between Default and Programming sessions.
- *  Programming session requires sec_unlocked == true and speed == 0.
- * ═══════════════════════════════════════════════════════════════════════════ */
+/**
+  * @brief SID 0x10 — DiagnosticSessionControl handler.
+  */
 void SIGMA_DiagSession(uint8_t len, uint8_t sub, uint8_t sid, uint8_t *tx_buf)
 {
     if (len != 2u)
@@ -178,7 +150,7 @@ void SIGMA_DiagSession(uint8_t len, uint8_t sub, uint8_t sid, uint8_t *tx_buf)
             break;
 
         case PROGRAMMING_SESSION:
-            if (!sec_unlocked)
+            if (!(sec_unlocked || high_sec_unlocked))
             {
                 tx_buf[0] = 0x03;
                 tx_buf[1] = NRC;
@@ -213,12 +185,9 @@ void SIGMA_DiagSession(uint8_t len, uint8_t sub, uint8_t sid, uint8_t *tx_buf)
     }
 }
 
-/* ═══════════════════════════════════════════════════════════════════════════
- *  SIGMA_ECUReset — SID 0x11
- *
- *  Only accessible in PROGRAMMING_SESSION.
- *  HW_RESET and KEY_OFF_ON_RESET require flag == true.
- * ═══════════════════════════════════════════════════════════════════════════ */
+/**
+  * @brief SID 0x11 — ECUReset handler.
+  */
 void SIGMA_ECUReset(uint8_t len, uint8_t sub, uint8_t sid, uint8_t *tx_buf)
 {
     if (Ecu_session != PROGRAMMING_SESSION)
@@ -281,25 +250,14 @@ void SIGMA_ECUReset(uint8_t len, uint8_t sub, uint8_t sid, uint8_t *tx_buf)
     }
 }
 
-/* ═══════════════════════════════════════════════════════════════════════════
- *  SIGMA_READ_DID — SID 0x22
- *
- *  Length rules:
- *    Even length (0,2,4,6) with len==2 → valid single DID
- *    Even length != 2      → NRC_INCORRECT_MESSAGE_LENGTH (malformed)
- *    Odd length (1,3,5,7)  → NRC_RESPONS_TO_LONG (multiple DIDs)
- *
- *  Supported DIDs:
- *    DID_ECU_SERIAL_NUMBER : 4 data bytes  → total response len 0x07
- *    DID_ECU_HW_VERSION    : 1 data byte   → total response len 0x04
- *    DID_ECU_SW_VERSION    : 1 data byte   → total response len 0x04
- *    DID_ECU_SESSION       : 1 data byte   → total response len 0x04
- * ═══════════════════════════════════════════════════════════════════════════ */
+/**
+  * @brief SID 0x22 — ReadDataByIdentifier handler.
+  */
 void SIGMA_READ_DID(uint8_t length, uint16_t did, uint8_t *tx_buf)
 {
     memset(tx_buf, 0xAA, 8);
 
-    /* Even length that isn't exactly 2 → malformed */
+    /* Even length that is not exactly 2 is malformed */
     if ((length % 2u) == 0u && length != 2u)
     {
         tx_buf[0] = 0x03;
@@ -310,7 +268,7 @@ void SIGMA_READ_DID(uint8_t length, uint16_t did, uint8_t *tx_buf)
         return;
     }
 
-    /* Odd length > 1 → multiple DIDs, response would be too long */
+    /* Odd length greater than 1 means multiple DIDs — response too long */
     if (length == 5u || length == 7u)
     {
         tx_buf[0] = 0x03;
@@ -321,11 +279,11 @@ void SIGMA_READ_DID(uint8_t length, uint16_t did, uint8_t *tx_buf)
         return;
     }
 
-    /* length == 2 → valid single DID request */
+    /* length == 2 — valid single DID request */
     switch (did)
     {
         case DID_ECU_SERIAL_NUMBER:
-            /* SN0001 → 4 bytes: 'S' 'N' 0x00 0x01 */
+            /* SN0001 encoded as 'S' 'N' 0x00 0x01 */
             tx_buf[0] = 0x07;
             tx_buf[1] = SID_READ_DATA + POS;   /* 0x62 */
             tx_buf[2] = (uint8_t)(did >> 8);
@@ -358,6 +316,7 @@ void SIGMA_READ_DID(uint8_t length, uint16_t did, uint8_t *tx_buf)
             break;
 
         case DID_ECU_SESSION:
+            /* Returns current session: DEFAULT=0x01 / PROGRAMMING=0x02 */
             tx_buf[0] = 0x04;
             tx_buf[1] = SID_READ_DATA + POS;
             tx_buf[2] = (uint8_t)(did >> 8);
@@ -376,12 +335,9 @@ void SIGMA_READ_DID(uint8_t length, uint16_t did, uint8_t *tx_buf)
     }
 }
 
-/* ═══════════════════════════════════════════════════════════════════════════
- *  SIGMA_RoutineControl — SID 0x31
- *
- *  Only accessible in PROGRAMMING_SESSION with high_sec_unlocked.
- *  Frame: [LEN][31][SUB][RID_H][RID_L]   len must be 4.
- * ═══════════════════════════════════════════════════════════════════════════ */
+/**
+  * @brief SID 0x31 — RoutineControl handler.
+  */
 void SIGMA_RoutineControl(uint8_t len, uint8_t sub,
                           uint8_t rid_H, uint8_t rid_L,
                           uint8_t sid, uint8_t *tx_buf)
@@ -471,20 +427,14 @@ void SIGMA_RoutineControl(uint8_t len, uint8_t sub,
     }
 }
 
-/* ═══════════════════════════════════════════════════════════════════════════
- *  SIGMA_SecurityAccess — SID 0x27 (sub 0x01 / 0x02 only)
- *
- *  Key algorithm: key = seed_H XOR seed_L
- *  State machine:
- *    sec_locked    → always NRC_EXCEEDED_NUMBERS_OF_ATTEMPTS
- *    REQUEST_SEED  → generate seed, start timer, reset attempts
- *    SEND_KEY      → verify sequence, timeout, key correctness
- * ═══════════════════════════════════════════════════════════════════════════ */
+/**
+  * @brief SID 0x27 — SecurityAccess handler (sub 0x01 / 0x02 only).
+  */
 void SIGMA_SecurityAccess(uint8_t length, uint8_t sub, uint8_t key, uint8_t *tx_buf)
 {
     memset(tx_buf, 0xAA, 8);
 
-    /* Extra data bytes on REQUEST_SEED → NRC */
+    /* Extra data bytes on REQUEST_SEED are not allowed */
     if (length > 2u && sub == REQUEST_SEED)
     {
         tx_buf[0] = 0x03;
@@ -495,7 +445,6 @@ void SIGMA_SecurityAccess(uint8_t length, uint8_t sub, uint8_t key, uint8_t *tx_
         return;
     }
 
-    /* Locked state */
     if (sec_locked)
     {
         tx_buf[0] = 0x03;
@@ -516,8 +465,8 @@ void SIGMA_SecurityAccess(uint8_t length, uint8_t sub, uint8_t key, uint8_t *tx_
         uint8_t seed_H = (uint8_t)(sec_seed >> 8);
         uint8_t seed_L = (uint8_t)(sec_seed & 0xFF);
 
-        tx_buf[0] = 0x04;               /* LEN: SID_RESP + SUB + seed_H + seed_L */
-        tx_buf[1] = SID_SECURITY + POS; /* 0x67 */
+        tx_buf[0] = 0x04;
+        tx_buf[1] = SID_SECURITY + POS;   /* 0x67 */
         tx_buf[2] = REQUEST_SEED;
         tx_buf[3] = seed_H;
         tx_buf[4] = seed_L;
@@ -546,7 +495,7 @@ void SIGMA_SecurityAccess(uint8_t length, uint8_t sub, uint8_t key, uint8_t *tx_
             return;
         }
 
-        /* Expected key: seed_H XOR seed_L */
+        /* Expected key = seed_H XOR seed_L */
         uint8_t expected = (uint8_t)(sec_seed >> 8) ^ (uint8_t)(sec_seed & 0xFF);
 
         if (key != expected)
@@ -569,7 +518,7 @@ void SIGMA_SecurityAccess(uint8_t length, uint8_t sub, uint8_t key, uint8_t *tx_
             return;
         }
 
-        /* Key correct */
+        /* Key correct — unlock level 1 security */
         sec_unlocked  = true;
         sec_seed_sent = false;
         sec_attempts  = 0;
