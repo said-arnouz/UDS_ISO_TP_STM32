@@ -1,0 +1,7 @@
+legacy_v3_aes_ccm.c:25:9:AES_CCM_Encrypt_Init	32	static
+legacy_v3_aes_ccm.c:95:9:AES_CCM_Header_Append	32	static
+legacy_v3_aes_ccm.c:123:9:AES_CCM_Encrypt_Append	48	static
+legacy_v3_aes_ccm.c:166:9:AES_CCM_Encrypt_Finish	40	static
+legacy_v3_aes_ccm.c:212:9:AES_CCM_Decrypt_Init	32	static
+legacy_v3_aes_ccm.c:281:9:AES_CCM_Decrypt_Append	48	static
+legacy_v3_aes_ccm.c:324:9:AES_CCM_Decrypt_Finish	32	static

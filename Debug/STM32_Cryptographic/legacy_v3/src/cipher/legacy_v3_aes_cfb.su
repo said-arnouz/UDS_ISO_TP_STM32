@@ -1,0 +1,6 @@
+legacy_v3_aes_cfb.c:26:9:AES_CFB_Encrypt_Init	32	static
+legacy_v3_aes_cfb.c:70:9:AES_CFB_Encrypt_Append	48	static
+legacy_v3_aes_cfb.c:124:9:AES_CFB_Encrypt_Finish	32	static
+legacy_v3_aes_cfb.c:146:9:AES_CFB_Decrypt_Init	32	static
+legacy_v3_aes_cfb.c:190:9:AES_CFB_Decrypt_Append	48	static
+legacy_v3_aes_cfb.c:245:9:AES_CFB_Decrypt_Finish	32	static

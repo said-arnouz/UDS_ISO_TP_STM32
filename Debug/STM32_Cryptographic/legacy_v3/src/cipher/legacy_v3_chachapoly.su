@@ -1,0 +1,7 @@
+legacy_v3_chachapoly.c:25:9:ChaCha20Poly1305_Encrypt_Init	32	static
+legacy_v3_chachapoly.c:78:9:ChaCha20Poly1305_Header_Append	32	static
+legacy_v3_chachapoly.c:106:9:ChaCha20Poly1305_Encrypt_Append	48	static
+legacy_v3_chachapoly.c:149:9:ChaCha20Poly1305_Encrypt_Finish	40	static
+legacy_v3_chachapoly.c:189:9:ChaCha20Poly1305_Decrypt_Init	32	static
+legacy_v3_chachapoly.c:242:9:ChaCha20Poly1305_Decrypt_Append	48	static
+legacy_v3_chachapoly.c:285:9:ChaCha20Poly1305_Decrypt_Finish	32	static

@@ -1,0 +1,6 @@
+SIGMA_iso_tp.c:64:13:send_fc	16	static
+SIGMA_iso_tp.c:77:13:reset_ctx	8	static
+SIGMA_iso_tp.c:86:13:send_nrc	16	static
+SIGMA_iso_tp.c:109:6:SIGMA_ISO_TP_Send	32	static
+SIGMA_iso_tp.c:167:6:SIGMA_ISO_TP_Process	96	static
+SIGMA_iso_tp.c:327:6:SIGMA_HighSecurity	384	static

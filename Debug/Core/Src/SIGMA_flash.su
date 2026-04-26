@@ -1,0 +1,4 @@
+SIGMA_flash.c:29:17:SIGMA_Flash_GetSector	16	static
+SIGMA_flash.c:50:16:SIGMA_Flash_Erase	56	static
+SIGMA_flash.c:87:16:SIGMA_Flash_Write	40	static
+SIGMA_flash.c:126:16:SIGMA_Flash_Read	32	static

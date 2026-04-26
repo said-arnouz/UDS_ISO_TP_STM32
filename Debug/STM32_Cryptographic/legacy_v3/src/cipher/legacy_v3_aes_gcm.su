@@ -1,0 +1,7 @@
+legacy_v3_aes_gcm.c:25:9:AES_GCM_Encrypt_Init	32	static
+legacy_v3_aes_gcm.c:84:9:AES_GCM_Header_Append	32	static
+legacy_v3_aes_gcm.c:112:9:AES_GCM_Encrypt_Append	48	static
+legacy_v3_aes_gcm.c:155:9:AES_GCM_Encrypt_Finish	40	static
+legacy_v3_aes_gcm.c:201:9:AES_GCM_Decrypt_Init	32	static
+legacy_v3_aes_gcm.c:262:9:AES_GCM_Decrypt_Append	48	static
+legacy_v3_aes_gcm.c:307:9:AES_GCM_Decrypt_Finish	32	static
