@@ -1,8 +1,7 @@
-# SIGMA UDS Bootloader
+# UDS ISO-TP STM32
 
-> UDS/ISO-TP diagnostic stack on STM32F411RE — 6 ISO 14229 services, AES-ECB-128 security access, and a PyQt5 diagnostic host (DiagBox)
-
----
+A full **UDS (ISO 14229)** diagnostic stack implemented on **STM32F411RE** over UART,
+paired with a **PyQt5 diagnostic host** that replicates a professional ECU tester.
 
 ![SIGMA DiagBox](images/1.PNG)
 
@@ -19,22 +18,20 @@
 
 ---
 
-## UDS Services Implemented
+## UDS Services
 
-| SID  | Service                          | Notes                                    |
-|------|----------------------------------|------------------------------------------|
-| 0x10 | DiagnosticSessionControl         | Default / Programming session            |
-| 0x11 | ECUReset                         | SW / HW / KeyOffOn reset                 |
-| 0x22 | ReadDataByIdentifier             | Serial number, HW/SW version, session    |
-| 0x27 | SecurityAccess                   | XOR seed/key + AES-ECB-128 high security |
-| 0x31 | RoutineControl                   | Erase memory, integrity check            |
-| 0x2F | InputOutputControlByIdentifier   | LED, Buzzer, Fan (PWM), Relay            |
+| SID  | Service                        | Notes                                    |
+|------|--------------------------------|------------------------------------------|
+| 0x10 | DiagnosticSessionControl       | Default / Programming session            |
+| 0x11 | ECUReset                       | SW / HW / KeyOffOn reset                 |
+| 0x22 | ReadDataByIdentifier           | Serial number, HW/SW version, session    |
+| 0x27 | SecurityAccess                 | XOR seed/key + AES-ECB-128 high security |
+| 0x31 | RoutineControl                 | Erase memory, integrity check            |
+| 0x2F | InputOutputControlByIdentifier | LED, Buzzer (PWM), Fan (PWM), Relay      |
 
 ---
 
 ## ISO-TP Transport (ISO 15765-2)
-
-8-byte UART frames — full multi-frame support:
 
 | Frame | PCI    | Description                      |
 |-------|--------|----------------------------------|
@@ -43,65 +40,59 @@
 | CF    | `0x2N` | Consecutive Frame (sequence N)   |
 | FC    | `0x30` | Flow Control (ContinueToSend)    |
 
-Used for **SID 0x27 sub 0x03/0x04** — AES seed (18 bytes) and key exchange over multi-frame.
+Multi-frame transport is used for SID 0x27 sub 0x03/0x04 — the AES seed (18 bytes) and key exchange.
 
 ---
 
 ## Security Access — Two Levels
 
-**Level 1 — Standard (0x27 0x01 / 0x02)**
-- 2-byte seed generated from SysTick
-- Key algorithm: `key = seed_H XOR seed_L`
+**Level 1 (0x27 0x01 / 0x02)**
+- 2-byte seed from SysTick
+- Key = `seed_H XOR seed_L`
 
 **Level 2 — High Security (0x27 0x03 / 0x04)**
-- 16-byte seed generated from SysTick
-- Key algorithm: `key = AES_ECB_Encrypt(master_key, seed)`
-- Transmitted via ISO-TP multi-frame (18 bytes)
-- Max 3 attempts before lockout
-
----
-
-## SIGMA DiagBox — PyQt5 Host
-
-- Full ISO-TP framing engine (SF / FF / CF / FC auto-detection)
-- Color-coded trace table (PCI / SID REQ / SID RESP / DID / PAYLOAD / PADDING)
-- Frame type column (SF / FF / CF / FC)
-- I/O Control dashboard — live gauges for Fan, Buzzer, Relay
-- Serial port auto-detection and connection management
+- 16-byte seed from SysTick
+- Key = `AES_ECB_Encrypt(master_key, seed)`
+- Transported via ISO-TP multi-frame
+- Lockout after 3 failed attempts
 
 ---
 
 ## Project Structure
 
 ```
-├── Core/                        # STM32 HAL core
-├── Drivers/                     # STM32 HAL drivers
-├── SIGMA_User_Interface/
-│   ├── SIGMA_UDS_Host.py        # PyQt5 diagnostic GUI
-│   ├── SIGMA_IO_Control.py      # I/O dashboard widgets
-│   ├── IOCControlPage.py        # I/O control page
-│   └── aes_ecb_key.py           # AES-ECB-128 key calculator
+├── Core/
+├── Drivers/
 ├── Src/
-│   ├── main.c                   # PCI decoder + main loop
-│   ├── SIGMA_uds.c              # UDS service handlers
-│   ├── SIGMA_iso_tp.c           # ISO-TP transport layer
-│   └── SIGMA_io_control.c       # SID 0x2F I/O control
+│   ├── main.c
+│   ├── SIGMA_uds.c
+│   ├── SIGMA_iso_tp.c
+│   └── SIGMA_io_control.c
+├── Inc/
+│   ├── SIGMA_uds.h
+│   ├── SIGMA_iso_tp.h
+│   └── SIGMA_io_control.h
+├── SIGMA_User_Interface/
+│   ├── SIGMA_UDS_Host.py
+│   ├── SIGMA_IO_Control.py
+│   ├── IOCControlPage.py
+│   └── aes_ecb_key.py
 └── images/
-    └── 1.PNG                    # DiagBox screenshot
+    └── 1.PNG
 ```
 
 ---
 
 ## Hardware
-
-| Component  | Detail                        |
-|------------|-------------------------------|
-| Board      | STM32F411RE Nucleo            |
-| Interface  | UART2 @ 115200 baud (ST-Link) |
-| LED        | PA5 — LD2 onboard             |
-| Fan        | TIM2 CH2 — PWM 0–100%        |
-| Buzzer     | TIM3 CH1 — PWM 0–100%        |
-| Relay      | PB0 — GPIO                    |
+Fan, Buzzer and Relay are just simulator in the UI
+| Component | Detail                        |
+|-----------|-------------------------------|
+| Board     | STM32F411RE Nucleo            |
+| Interface | UART2 @ 115200 baud (ST-Link) |
+| LED       | PA5                           |
+| Fan       | TIM2 CH2 — PWM 0–100%        |
+| Buzzer    | TIM3 CH1 — PWM 0–100%        |
+| Relay     | PB0                           |
 
 ---
 
