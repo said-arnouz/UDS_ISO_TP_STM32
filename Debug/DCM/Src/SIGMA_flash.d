@@ -1,4 +1,4 @@
-Core/Src/SIGMA_flash.o: ../Core/Src/SIGMA_flash.c \
+DCM/Src/SIGMA_flash.o: ../DCM/Src/SIGMA_flash.c \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h \
  ../Core/Inc/stm32f4xx_hal_conf.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc.h \
@@ -26,7 +26,7 @@ Core/Src/SIGMA_flash.o: ../Core/Src/SIGMA_flash.c \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr_ex.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h \
- ../Core/Inc/SIGMA_flash.h
+ C:/Users/HP/Documents/work_space/SIGMA_UDS_TP/DCM/Inc/SIGMA_flash.h
 
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h:
 
@@ -82,4 +82,4 @@ Core/Src/SIGMA_flash.o: ../Core/Src/SIGMA_flash.c \
 
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h:
 
-../Core/Inc/SIGMA_flash.h:
+C:/Users/HP/Documents/work_space/SIGMA_UDS_TP/DCM/Inc/SIGMA_flash.h:

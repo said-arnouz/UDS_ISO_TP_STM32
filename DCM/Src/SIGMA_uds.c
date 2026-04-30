@@ -17,7 +17,7 @@
 #include "SIGMA_iso_tp.h"
 
 extern bool high_sec_unlocked;
-
+static uint8_t assembled[21];
 /* Security state — private to this file */
 static uint16_t sec_seed      = 0;
 static bool     sec_seed_sent = false;
@@ -288,7 +288,7 @@ void SIGMA_READ_DID(uint8_t length, uint16_t did, uint8_t *tx_buf)
     {
         case DID_ECU_SERIAL_NUMBER:
         	/* VIN is : 2T3RFREV7DW108177 */
-            uint8_t assembled[21];
+
         	assembled[0] = 0x14;
         	assembled[1] = SID_READ_DATA + POS;   /* 0x62 */
         	assembled[2] = (uint8_t)(did >> 8);

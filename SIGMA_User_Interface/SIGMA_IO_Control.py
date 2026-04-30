@@ -160,7 +160,7 @@ class RelayWidget(QWidget):
 
         txt   = "CLOSED" if self._closed else "OPEN"
         c_txt = QColor(_RED) if self._closed else QColor(_TXT_LO)
-        fsize = max(9, int(ri * 0.38))
+        fsize = max(7, int(ri * 0.30)) if self._closed else max(9, int(ri * 0.38))
         f = QFont("Consolas", fsize); f.setBold(True)
         p.setFont(f)
         p.setPen(c_txt)

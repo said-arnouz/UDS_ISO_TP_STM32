@@ -103,6 +103,6 @@ void SIGMA_ISO_TP_Send(uint8_t *payload, uint8_t len);
  * @param  tx_buf : 8-byte transmit scratch buffer.
  */
 void SIGMA_HighSecurity(uint8_t len, uint8_t sub,
-                        uint8_t *frame, uint8_t *tx_buf);
+		 	 	 	 	 uint8_t *frame, uint8_t *tx_buf);
 
 #endif /* SIGMA_ISO_TP_H */

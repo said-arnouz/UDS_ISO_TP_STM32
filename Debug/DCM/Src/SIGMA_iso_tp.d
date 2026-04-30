@@ -1,6 +1,6 @@
-Core/Src/SIGMA_iso_tp.o: ../Core/Src/SIGMA_iso_tp.c \
- ../Core/Inc/SIGMA_iso_tp.h ../Core/Inc/main.h \
- ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h \
+DCM/Src/SIGMA_iso_tp.o: ../DCM/Src/SIGMA_iso_tp.c \
+ C:/Users/HP/Documents/work_space/SIGMA_UDS_TP/DCM/Inc/SIGMA_iso_tp.h \
+ ../Core/Inc/main.h ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h \
  ../Core/Inc/stm32f4xx_hal_conf.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_def.h \
@@ -102,9 +102,10 @@ Core/Src/SIGMA_iso_tp.o: ../Core/Src/SIGMA_iso_tp.c \
  C:/Users/HP/Documents/work_space/SIGMA_UDS_TP/STM32_Cryptographic/include/ecc/cmox_ecc_types.h \
  C:/Users/HP/Documents/work_space/SIGMA_UDS_TP/STM32_Cryptographic/include/cmox_common.h \
  C:/Users/HP/Documents/work_space/SIGMA_UDS_TP/STM32_Cryptographic/legacy_v3/include/rsa/legacy_v3_rsa.h \
- ../Core/Inc/SIGMA_uds.h ../Core/Inc/SIGMA_io_control.h
+ C:/Users/HP/Documents/work_space/SIGMA_UDS_TP/DCM/Inc/SIGMA_uds.h \
+ C:/Users/HP/Documents/work_space/SIGMA_UDS_TP/DCM/Inc/SIGMA_io_control.h
 
-../Core/Inc/SIGMA_iso_tp.h:
+C:/Users/HP/Documents/work_space/SIGMA_UDS_TP/DCM/Inc/SIGMA_iso_tp.h:
 
 ../Core/Inc/main.h:
 
@@ -312,6 +313,6 @@ C:/Users/HP/Documents/work_space/SIGMA_UDS_TP/STM32_Cryptographic/include/cmox_c
 
 C:/Users/HP/Documents/work_space/SIGMA_UDS_TP/STM32_Cryptographic/legacy_v3/include/rsa/legacy_v3_rsa.h:
 
-../Core/Inc/SIGMA_uds.h:
+C:/Users/HP/Documents/work_space/SIGMA_UDS_TP/DCM/Inc/SIGMA_uds.h:
 
-../Core/Inc/SIGMA_io_control.h:
+C:/Users/HP/Documents/work_space/SIGMA_UDS_TP/DCM/Inc/SIGMA_io_control.h:

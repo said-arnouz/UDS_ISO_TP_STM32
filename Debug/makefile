@@ -11,6 +11,7 @@ RM := rm -rf
 -include sources.mk
 -include STM32_Cryptographic/legacy_v3/src/cipher/subdir.mk
 -include Drivers/STM32F4xx_HAL_Driver/Src/subdir.mk
+-include DCM/Src/subdir.mk
 -include Core/Startup/subdir.mk
 -include Core/Src/subdir.mk
 -include subdir.mk

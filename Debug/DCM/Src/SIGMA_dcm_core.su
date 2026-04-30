@@ -1,0 +1,4 @@
+SIGMA_dcm_core.c:30:19:prv_DecodePci	16	static
+SIGMA_dcm_core.c:49:13:prv_SendGeneralReject	16	static
+SIGMA_dcm_core.c:68:6:DCM_Core_ProcessFrame	16	static
+SIGMA_dcm_core.c:98:6:DCM_Core_Tick	8	static

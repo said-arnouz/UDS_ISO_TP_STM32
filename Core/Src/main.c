@@ -19,25 +19,13 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "SIGMA_uds.h"
-#include "stdbool.h"
-#include "string.h"
-#include "SIGMA_iso_tp.h"
+#include "SIGMA_dcm_core.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
-/* PCI type decoder */
-typedef enum {
-    PCI_SF = 0x00,   /* Single Frame       */
-    PCI_FF = 0x10,   /* First Frame        */
-    PCI_CF = 0x20,   /* Consecutive Frame  */
-    PCI_FC = 0x30,   /* Flow Control       */
-    PCI_UNKNOWN = 0xFF
-} PCI_Type_t;
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -51,19 +39,7 @@ typedef enum {
 /* Private variables ---------------------------------------------------------*/
 CRC_HandleTypeDef hcrc;
 UART_HandleTypeDef huart2;
-
 /* USER CODE BEGIN PV */
-static PCI_Type_t decode_pci(uint8_t byte0)
-{
-    switch (byte0 & 0xF0)
-    {
-        case 0x00: return PCI_SF;
-        case 0x10: return PCI_FF;
-        case 0x20: return PCI_CF;
-        case 0x30: return PCI_FC;
-        default:   return PCI_UNKNOWN;
-    }
-}
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -81,9 +57,9 @@ uint8_t tx_buf[8];
 uint8_t frame[ISO_UART_FRAME_LEN] = {0};
 // variables
 uint8_t Ecu_session = DEFAULT_SESSION;
-uint8_t speed = 0;
-uint8_t temp  = 10;
-bool    flag  = false;
+uint8_t speed 		= 40;
+uint8_t temp 		= 20;
+bool    flag 		= false;
 /* USER CODE END 0 */
 
 /**
@@ -124,39 +100,14 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	    if (frame_ready)
-	    {
-	        frame_ready = 0;
+      if (frame_ready)
+      {
+          frame_ready = 0;
+          DCM_Core_ProcessFrame(frame, tx_buf);   /* all PCI decode + dispatch here */
+      }
 
-	        switch (decode_pci(frame[0]))
-	        {
-	            case PCI_SF:
-	                SIGMA_UDS_Process(frame, tx_buf);
-	                break;
-
-	            case PCI_FF:
-	            case PCI_CF:
-	                SIGMA_ISO_TP_Process(frame, tx_buf);
-	                break;
-
-	            case PCI_FC:
-	                /* FC from tester handled inside SIGMA_ISO_TP_Send — ignore here */
-	                break;
-
-	            case PCI_UNKNOWN:
-	            default:
-	                /* malformed frame — send NRC */
-	                tx_buf[0] = 0x03;
-	                tx_buf[1] = NRC;
-	                tx_buf[2] = frame[1];
-	                tx_buf[3] = NRC_GENERAL_REJECT;
-	                SIGMA_UART_Send(tx_buf, 8);
-	                break;
-	        }
-	    }
-
-	    SIGMA_IOControl_Tick();
-	    HAL_Delay(10);
+      DCM_Core_Tick();   /* periodic IOControl update */
+      HAL_Delay(10);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -317,7 +268,18 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
     if (GPIO_Pin == B1_Pin)
     {
-            flag = !flag;
+        flag = !flag;
+
+        if (speed == 0)
+        {
+            speed = 50;
+            temp  = 20;
+        }
+        else
+        {
+            speed = 0;
+            temp  = 9;
+        }
     }
 }
 

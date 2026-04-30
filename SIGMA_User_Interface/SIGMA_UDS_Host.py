@@ -466,7 +466,7 @@ class SigmaUDSApp(QMainWindow):
         # HEADER
         hdr = QFrame()
         hdr.setFixedHeight(60)
-        hdr.setStyleSheet(f"background:{C['header']};border-bottom:1px solid {C['border']};")
+        hdr.setStyleSheet(f"background:{C['header']};border-bottom:None;")
         hl = QHBoxLayout(hdr)
         hl.setContentsMargins(14, 8, 16, 8)
         hl.setSpacing(8)
@@ -572,13 +572,16 @@ class SigmaUDSApp(QMainWindow):
         tp_v.addWidget(leg)
 
         self._tree = QTreeWidget()
+        self._tree.setContextMenuPolicy(Qt.CustomContextMenu)
+        self._tree.customContextMenuRequested.connect(self._on_tree_context_menu)
         self._tree.setColumnCount(7)
         self._tree.setHeaderLabels([
             "Time", "Protocol Service", "Service",
             "CAN ID (HEX)", "Data Bytes (HEX)", "Sender", "Frame Type"])
         self._tree.setRootIsDecorated(False)
         self._tree.setAlternatingRowColors(True)
-        self._tree.setSelectionMode(QAbstractItemView.SingleSelection)
+        self._tree.setSelectionBehavior(QAbstractItemView.SelectRows)
+        self._tree.setSelectionMode(QAbstractItemView.ExtendedSelection)
         self._tree.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self._tree.setUniformRowHeights(True)
         self._tree.setIndentation(0)
@@ -592,10 +595,9 @@ class SigmaUDSApp(QMainWindow):
         hh.setSectionResizeMode(COL_BYTES,  QHeaderView.Stretch)
         hh.setSectionResizeMode(COL_SENDER, QHeaderView.ResizeToContents)
         hh.setSectionResizeMode(COL_FRAME,  QHeaderView.ResizeToContents)
+        hh.setSectionsMovable(False) 
         hh.setStretchLastSection(False)
         hh.setMinimumSectionSize(70)
-        hh.resizeSection(COL_PROTO, 220)
-        hh.resizeSection(COL_SVC,   200)
 
         self._tree.setStyleSheet(f"""
             QTreeWidget{{
@@ -636,7 +638,18 @@ class SigmaUDSApp(QMainWindow):
         self.setStatusBar(self._sb)
 
         self._switch_page(0)
-
+    # ── COPY DATA ─────────────────────────────────────────────────────
+    def _on_tree_context_menu(self, pos):
+        from PyQt5.QtWidgets import QMenu
+        item = self._tree.itemAt(pos)
+        if not item:
+            return
+        menu = QMenu(self._tree)
+        act = menu.addAction("Copy Data Bytes")
+        act.triggered.connect(
+            lambda: QApplication.clipboard().setText(item.text(COL_BYTES))
+        )
+        menu.exec_(self._tree.viewport().mapToGlobal(pos))
     # ── PAGE SWITCHING ─────────────────────────────────────────────────────
     def _switch_page(self, idx: int):
         self._current_page = idx

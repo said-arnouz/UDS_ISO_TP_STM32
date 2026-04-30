@@ -3,6 +3,6 @@ SIGMA_uds.c:39:6:SIGMA_UART_Send	24	static
 SIGMA_uds.c:57:6:SIGMA_UDS_Process	48	static
 SIGMA_uds.c:135:6:SIGMA_DiagSession	16	static
 SIGMA_uds.c:196:6:SIGMA_ECUReset	16	static
-SIGMA_uds.c:261:6:SIGMA_READ_DID	48	static
-SIGMA_uds.c:344:6:SIGMA_RoutineControl	32	static
-SIGMA_uds.c:436:6:SIGMA_SecurityAccess	24	static
+SIGMA_uds.c:261:6:SIGMA_READ_DID	24	static
+SIGMA_uds.c:343:6:SIGMA_RoutineControl	32	static
+SIGMA_uds.c:435:6:SIGMA_SecurityAccess	24	static

@@ -1,7 +1,0 @@
-SIGMA_aes.c:39:16:xtime	16	static
-SIGMA_aes.c:45:13:key_expansion	24	static
-SIGMA_aes.c:84:13:sub_bytes	24	static
-SIGMA_aes.c:92:13:shift_rows	24	static
-SIGMA_aes.c:105:13:mix_columns	32	static
-SIGMA_aes.c:122:13:add_round_key	32	static
-SIGMA_aes.c:130:6:SIGMA_AES128_Encrypt	232	static

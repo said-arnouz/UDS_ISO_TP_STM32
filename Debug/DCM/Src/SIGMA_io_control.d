@@ -1,5 +1,6 @@
-Core/Src/SIGMA_io_control.o: ../Core/Src/SIGMA_io_control.c \
- ../Core/Inc/SIGMA_uds.h ../Core/Inc/SIGMA_io_control.h \
+DCM/Src/SIGMA_io_control.o: ../DCM/Src/SIGMA_io_control.c \
+ C:/Users/HP/Documents/work_space/SIGMA_UDS_TP/DCM/Inc/SIGMA_uds.h \
+ C:/Users/HP/Documents/work_space/SIGMA_UDS_TP/DCM/Inc/SIGMA_io_control.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h \
  ../Core/Inc/stm32f4xx_hal_conf.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc.h \
@@ -29,9 +30,9 @@ Core/Src/SIGMA_io_control.o: ../Core/Src/SIGMA_io_control.c \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h \
  ../Core/Inc/main.h
 
-../Core/Inc/SIGMA_uds.h:
+C:/Users/HP/Documents/work_space/SIGMA_UDS_TP/DCM/Inc/SIGMA_uds.h:
 
-../Core/Inc/SIGMA_io_control.h:
+C:/Users/HP/Documents/work_space/SIGMA_UDS_TP/DCM/Inc/SIGMA_io_control.h:
 
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h:
 

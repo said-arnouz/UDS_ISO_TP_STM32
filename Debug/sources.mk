@@ -22,6 +22,7 @@ OBJCOPY_BIN :=
 SUBDIRS := \
 Core/Src \
 Core/Startup \
+DCM/Src \
 Drivers/STM32F4xx_HAL_Driver/Src \
 STM32_Cryptographic/legacy_v3/src/cipher \
 
