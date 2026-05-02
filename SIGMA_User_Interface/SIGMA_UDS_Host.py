@@ -184,7 +184,7 @@ def describe_frame(frame: bytes, sender: str):
         sub       = frame[3] if len(frame) > 3 else 0
         name      = SERVICE_NAMES.get(sid, f"0x{sid:02X}")
         is_resp   = (0x40 <= sid < 0x80) or sid == 0x7F
-        det       = SECURITY_NAMES.get(sub, f"Sub 0x{sub:02X}") if sid in (0x27, 0x67) else f"LEN={total_len}"
+        det       = SECURITY_NAMES.get(sub, f"Sub 0x{sub:02X}")
         colored = []
         for i, b in enumerate(frame):
             hx = f"{b:02X}"

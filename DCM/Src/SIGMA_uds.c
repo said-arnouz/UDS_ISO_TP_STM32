@@ -286,7 +286,7 @@ void SIGMA_READ_DID(uint8_t length, uint16_t did, uint8_t *tx_buf)
     /* length == 2 — valid single DID request */
     switch (did)
     {
-        case DID_ECU_SERIAL_NUMBER:
+        case DID_ECU_IDENTIFICATION_NUMBER :
         	/* VIN is : 2T3RFREV7DW108177 */
 
         	assembled[0] = 0x14;

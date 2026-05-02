@@ -41,13 +41,13 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY, DEBUGGING, OCTETS
  18 .debug_line   00010d89  00000000  00000000  0004fc57  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 19 .debug_str    0008ba48  00000000  00000000  000609e0  2**0
+ 19 .debug_str    0008ba50  00000000  00000000  000609e0  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 20 .comment      00000053  00000000  00000000  000ec428  2**0
+ 20 .comment      00000053  00000000  00000000  000ec430  2**0
                   CONTENTS, READONLY
- 21 .iar_vfe_header 00000020  00000000  00000000  000ec47c  2**2
+ 21 .iar_vfe_header 00000020  00000000  00000000  000ec484  2**2
                   CONTENTS, READONLY
- 22 .debug_frame  000027a4  00000000  00000000  000ec49c  2**2
+ 22 .debug_frame  000027a4  00000000  00000000  000ec4a4  2**2
                   CONTENTS, READONLY, DEBUGGING, OCTETS
 
 Disassembly of section .text:
@@ -5813,18 +5813,18 @@ void SIGMA_READ_DID(uint8_t length, uint16_t did, uint8_t *tx_buf)
  80028f4:	08002a0d 	.word	0x08002a0d
  80028f8:	08002a0d 	.word	0x08002a0d
  80028fc:	08002a0d 	.word	0x08002a0d
- 8002900:	08002929 	.word	0x08002929
+ 8002900:	08002a0d 	.word	0x08002a0d
  8002904:	08002a0d 	.word	0x08002a0d
  8002908:	08002a0d 	.word	0x08002a0d
  800290c:	08002a0d 	.word	0x08002a0d
- 8002910:	08002a0d 	.word	0x08002a0d
+ 8002910:	08002929 	.word	0x08002929
  8002914:	08002a0d 	.word	0x08002a0d
  8002918:	08002a0d 	.word	0x08002a0d
  800291c:	08002963 	.word	0x08002963
  8002920:	08002a0d 	.word	0x08002a0d
  8002924:	0800299b 	.word	0x0800299b
     {
-        case DID_ECU_SERIAL_NUMBER:
+        case DID_ECU_IDENTIFICATION_NUMBER :
         	/* VIN is : 2T3RFREV7DW108177 */
 
         	assembled[0] = 0x14;

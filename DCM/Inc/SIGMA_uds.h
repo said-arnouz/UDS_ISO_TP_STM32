@@ -62,7 +62,7 @@
 
 /* SID 0x22 — ReadDataByIdentifier (DIDs) */
 #define SID_READ_DATA                       0x22
-#define DID_ECU_SERIAL_NUMBER               0xF18C
+#define DID_ECU_IDENTIFICATION_NUMBER       0xF190
 #define DID_ECU_HW_VERSION                  0xF193
 #define DID_ECU_SW_VERSION                  0xF195
 #define DID_ECU_SESSION                     0xF186

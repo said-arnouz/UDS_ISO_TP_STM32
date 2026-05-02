@@ -16,18 +16,20 @@ paired with a **PyQt5 diagnostic host** that replicates a professional ECU teste
 └─────────────────────┘                            └─────────────────────┘
 ```
 
+![DCM Core Code](images/2.PNG)
+
 ---
 
 ## UDS Services
 
-| SID  | Service                        | Notes                                    |
-|------|--------------------------------|------------------------------------------|
-| 0x10 | DiagnosticSessionControl       | Default / Programming session            |
-| 0x11 | ECUReset                       | SW / HW / KeyOffOn reset                 |
-| 0x22 | ReadDataByIdentifier           | Serial number, HW/SW version, session    |
-| 0x27 | SecurityAccess                 | XOR seed/key + AES-ECB-128 high security |
-| 0x31 | RoutineControl                 | Erase memory, integrity check            |
-| 0x2F | InputOutputControlByIdentifier | LED, Buzzer (PWM), Fan (PWM), Relay      |
+| SID  | Service                        | Notes                                                                        |
+|------|--------------------------------|------------------------------------------------------------------------------|
+| 0x10 | DiagnosticSessionControl       | Default / Programming session                                                |
+| 0x11 | ECUReset                       | SW / HW / KeyOffOn reset                                                     |
+| 0x22 | ReadDataByIdentifier           | Serial number, HW/SW version, session                                        |
+| 0x27 | SecurityAccess                 | XOR seed/key + AES-ECB-128 high security                                     |
+| 0x31 | RoutineControl                 | Erase memory, integrity check                                                |
+| 0x2F | InputOutputControlByIdentifier | LED (real HW — PA5), Buzzer PWM, Fan PWM, Relay (3 simulated in UI) |
 
 ---
 
@@ -58,41 +60,21 @@ Multi-frame transport is used for SID 0x27 sub 0x03/0x04 — the AES seed (18 by
 
 ---
 
-## Project Structure
-
-```
-├── Core/
-├── Drivers/
-├── Src/
-│   ├── main.c
-│   ├── SIGMA_uds.c
-│   ├── SIGMA_iso_tp.c
-│   └── SIGMA_io_control.c
-├── Inc/
-│   ├── SIGMA_uds.h
-│   ├── SIGMA_iso_tp.h
-│   └── SIGMA_io_control.h
-├── SIGMA_User_Interface/
-│   ├── SIGMA_UDS_Host.py
-│   ├── SIGMA_IO_Control.py
-│   ├── IOCControlPage.py
-│   └── aes_ecb_key.py
-└── images/
-    └── 1.PNG
-```
-
----
-
 ## Hardware
-Fan, Buzzer and Relay are just simulator in the UI
+
+> ⚠️ **Note:** `0x2F` controls **4 outputs** — **LED (PA5) is real HW on STM32**.
+> Fan (TIM2 CH2), Buzzer (TIM3 CH1) and Relay (PB0) are **simulated in the PyQt5 UI only**.
+
+![I/O Control UI](images/3.PNG)
+
 | Component | Detail                        |
 |-----------|-------------------------------|
 | Board     | STM32F411RE Nucleo            |
 | Interface | UART2 @ 115200 baud (ST-Link) |
-| LED       | PA5                           |
-| Fan       | TIM2 CH2 — PWM 0–100%        |
-| Buzzer    | TIM3 CH1 — PWM 0–100%        |
-| Relay     | PB0                           |
+| LED       | PA5 — Real HW              |
+| Fan       | TIM2 CH2 — PWM 0–100% (UI sim)|
+| Buzzer    | TIM3 CH1 — PWM 0–100% (UI sim)|
+| Relay     | PB0 (UI sim)                  |
 
 ---
 
